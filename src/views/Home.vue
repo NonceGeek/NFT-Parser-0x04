@@ -27,16 +27,19 @@
           </a-col>
         </a-row>
         <!-- 横向显示 NFT 列表 -->
-        <div  v-for="index in tokenUrisLength">
+        <div
+          v-if="showSlides"
+          class="nfts"
+        >
           <a-row
-            v-if="showSlides"
+            v-for="(outerTokenList, outerIndex) in tokenList"
+            :key="outerIndex"
             class="token-list"
             type="flex"
-            justify="space-between"
             align="middle"
           >
-            <h1>部落{{index}}</h1>
-            <a-col :span="16" :offset="4">
+            <h1>部落{{ outerIndex + 1 }}</h1>
+            <a-col :span="16" :offset="1">
               <a-carousel arrows>
                 <div
                   slot="prevArrow"
@@ -53,13 +56,13 @@
                   <a-icon type="right-circle" />
                 </div>
                 <div
-                  v-for="pageIndex in Math.ceil(tokens[index-1].length /eachPageSlide)"
-                  :key="pageIndex"
+                  v-for="(middleTokenList, middleIndex) in outerTokenList"
+                  :key="`${outerIndex}/${middleIndex}`"
                 >
                   <a-row>
                     <a-col
-                      v-for="(token, index) in tokens[index-1]"
-                      :key="((pageIndex - 1) * eachPageSlide) + index"
+                      v-for="(token, innerIndex) in middleTokenList"
+                      :key="`${outerIndex}/${middleIndex}/${innerIndex}`"
                       :span="24 / eachPageSlide"
                       class="token-card"
                     >
@@ -104,29 +107,12 @@ export default {
       // nftAddress: '0xB84DF36e58a31f98d6294420569c365e8e1acaCd',
       nftAddress: '0xA8f3d9AB71C54111E120F5c0b658d18E0c7B8018',
       tokens: [],
-      tokenCount:0,
-      pageCount:0,
-      pagedTokens:[],
-      sortedTokens:[],
-      tokenUrisLength: null,
+      tokenList: [],
       eachPageSlide: 3,
       showSlides: false,
     };
   },
   computed: {
-    // tokenCount() {
-    //   return this.tokens.length;
-    // },
-    // pageCount() {
-    //   return Math.ceil(this.tokenCount / this.eachPageSlide);
-    // },
-    // pagedTokens() {
-    //   const arr = [];
-    //   for (let i = 0; i < this.pageCount; i++) {
-    //     arr.push(this.tokens.slice(i * this.eachPageSlide, (i + 1) * this.eachPageSlide));
-    //   }
-    //   return arr;
-    // },
     searchEnabled() {
       return this.nftAddress.length > 0
     },
@@ -168,22 +154,29 @@ export default {
         for (let i = 0; i < this.tokens.length; i++) {
           const tokenUri = await this.asyncTokenURI(this.tokens[i].tokenId)
           this.tokens[i].tokenUri = tokenUri
+
           const evidenceKey = `${chainId}:${erc721Address}:${this.tokens[i].tokenId}`
           this.tokens[i].evidenceKey = evidenceKey
-          const result = await this.asyncGetEvidenceByKey(evidenceKey+"#gene")
-          getSpiritInfo(result['0']).then(res=>{
-            this.tokens[i].evidence = res.data
-            this.tokens[i].imgUri =res.data.img_num
-          })
-        }
-        setTimeout(function(tokens){
-          getSortArray(tokens).then(res=>{
-            this.tokenUrisLength = res.data.data.length
-            this.tokens = res.data.data;
-            console.log(res.data.data);
 
-          })
-        }, 3000, this.tokens);
+          const result = await this.asyncGetEvidenceByKey(evidenceKey + "#gene")
+          const spiritInfo = await getSpiritInfo(result[0])
+
+          this.tokens[i].evidence = spiritInfo.data
+          this.tokens[i].imgUri = spiritInfo.data.img_num
+        }
+
+        const sortedArray = await getSortArray(this.tokens)
+        this.tokens = sortedArray.data.data
+
+        this.tokenList = []
+        for (let i = 0; i < this.tokens.length; i++) {
+          const pageCount = Math.ceil(this.tokens[i].length / this.eachPageSlide)
+          this.tokenList.push([])
+
+          for (let j = 0; j < pageCount; j++) {
+            this.tokenList[i].push(this.tokens[i].slice(j * this.eachPageSlide, (j + 1) * this.eachPageSlide))
+          }
+        }
 
         this.showSlides = true
 
@@ -278,6 +271,10 @@ export default {
       }
     }
 
+    .nfts {
+      box-sizing: border-box;
+      padding-left: 20px;
+    }
     .token-list {
       margin-top: 50px;
     }

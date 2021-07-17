@@ -2,8 +2,7 @@
   <div class="token-card">
     <a-card :title="evidenceKey">
       <div class="nft-img">
-        <img :src="require(`@/assets/spirits/${imgUri}.png`)">
-<!--        <img :src="imgUri">-->
+        <img :src="imgUri">
       </div>
       <div class="nft-extra">
         <span>性别：</span>
@@ -61,7 +60,7 @@ export default {
   methods: {
     normalize() {
       this.evidenceKey = this.token.evidenceKey
-      this.imgUri = this.token.imgUri
+      this.imgUri = require(`@/assets/spirits/${this.token.imgUri}.png`)
       if (!this.token.evidence) {
         this.extra = {
           sex: '暂无',
