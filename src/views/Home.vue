@@ -35,7 +35,7 @@
             justify="space-between"
             align="middle"
           >
-            <h6>{{ index }}</h6>
+            <h1>部落{{index}}</h1>
             <a-col :span="16" :offset="4">
               <a-carousel arrows>
                 <div
@@ -56,10 +56,9 @@
                   v-for="pageIndex in Math.ceil(tokens[index-1].length /eachPageSlide)"
                   :key="pageIndex"
                 >
-                  <h1>{{Math.ceil(tokens[index-1].length /eachPageSlide)}}</h1>
                   <a-row>
                     <a-col
-                      v-for="(token, index) in tokens[index -1]"
+                      v-for="(token, index) in tokens[index-1]"
                       :key="((pageIndex - 1) * eachPageSlide) + index"
                       :span="24 / eachPageSlide"
                       class="token-card"
@@ -137,6 +136,9 @@ export default {
 
   },
   methods: {
+    get1(){
+
+    },
     checkNFTAddrInURL() {
       if (this.$route.query.addr) {
         this.nftAddress = this.$route.query.addr
@@ -174,10 +176,14 @@ export default {
             this.tokens[i].imgUri =res.data.img_num
           })
         }
-        getSortArray(this.tokens).then(res=>{
-          this.tokenUrisLength = res.data.data.length
-          this.tokens = res.data.data;
-        })
+        setTimeout(function(tokens){
+          getSortArray(tokens).then(res=>{
+            this.tokenUrisLength = res.data.data.length
+            this.tokens = res.data.data;
+            console.log(res.data.data);
+
+          })
+        }, 3000, this.tokens);
 
         this.showSlides = true
 
@@ -189,6 +195,7 @@ export default {
         }
       }
     },
+
     asyncBalanceOf(nftAddress) {
       return new Promise((resolve, reject) => {
         erc721Contract.methods.balanceOf(nftAddress).call((err, result) => {
