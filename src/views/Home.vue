@@ -27,51 +27,54 @@
           </a-col>
         </a-row>
         <!-- 横向显示 NFT 列表 -->
-        <a-row
-          v-if="showSlides"
-          v-for="index in tokenUrisLength"
-          class="token-list"
-          type="flex"
-          justify="space-between"
-          align="middle"
-        >
-          <h6>{{ index }}</h6>
-          <a-col :span="16" :offset="4">
-            <a-carousel arrows>
-              <div
-                slot="prevArrow"
-                class="custom-slick-arrow"
-                style="left: 10px; zIndex: 1"
-              >
-                <a-icon type="left-circle" />
-              </div>
-              <div
-                slot="nextArrow"
-                class="custom-slick-arrow"
-                style="right: 10px"
-              >
-                <a-icon type="right-circle" />
-              </div>
-              <div
-                v-for="pageIndex in pageCount"
-                :key="pageIndex"
-              >
-                <a-row>
-                  <a-col
-                    v-for="(tokens, index) in pagedTokens[pageIndex - 1]"
-                    :key="((pageIndex - 1) * eachPageSlide) + index"
-                    :span="24 / eachPageSlide"
-                    class="token-card"
-                  >
-                    <token-card
-                      :token="pagedTokens[pageIndex - 1][index]"
-                    />
-                  </a-col>
-                </a-row>
-              </div>
-            </a-carousel>
-          </a-col>
-        </a-row>
+        <div  v-for="index in tokenUrisLength">
+          <a-row
+            v-if="showSlides"
+            class="token-list"
+            type="flex"
+            justify="space-between"
+            align="middle"
+          >
+            <h6>{{ index }}</h6>
+            <a-col :span="16" :offset="4">
+              <a-carousel arrows>
+                <div
+                  slot="prevArrow"
+                  class="custom-slick-arrow"
+                  style="left: 10px; zIndex: 1"
+                >
+                  <a-icon type="left-circle" />
+                </div>
+                <div
+                  slot="nextArrow"
+                  class="custom-slick-arrow"
+                  style="right: 10px"
+                >
+                  <a-icon type="right-circle" />
+                </div>
+                <div
+                  v-for="pageIndex in Math.ceil(tokens[index-1].length /eachPageSlide)"
+                  :key="pageIndex"
+                >
+                  <h1>{{Math.ceil(tokens[index-1].length /eachPageSlide)}}</h1>
+                  <a-row>
+                    <a-col
+                      v-for="(token, index) in tokens[index -1]"
+                      :key="((pageIndex - 1) * eachPageSlide) + index"
+                      :span="24 / eachPageSlide"
+                      class="token-card"
+                    >
+                      <token-card
+                        :token="token"
+                      />
+                    </a-col>
+                  </a-row>
+                </div>
+              </a-carousel>
+            </a-col>
+          </a-row>
+        </div>
+
       </a-layout-content>
       <a-layout-footer></a-layout-footer>
     </a-layout>
@@ -102,6 +105,9 @@ export default {
       // nftAddress: '0xB84DF36e58a31f98d6294420569c365e8e1acaCd',
       nftAddress: '0xA8f3d9AB71C54111E120F5c0b658d18E0c7B8018',
       tokens: [],
+      tokenCount:0,
+      pageCount:0,
+      pagedTokens:[],
       sortedTokens:[],
       tokenUrisLength: null,
       eachPageSlide: 3,
@@ -109,19 +115,19 @@ export default {
     };
   },
   computed: {
-    tokenCount() {
-      return this.tokens.length;
-    },
-    pageCount() {
-      return Math.ceil(this.tokenCount / this.eachPageSlide);
-    },
-    pagedTokens() {
-      const arr = [];
-      for (let i = 0; i < this.pageCount; i++) {
-        arr.push(this.tokens.slice(i * this.eachPageSlide, (i + 1) * this.eachPageSlide));
-      }
-      return arr;
-    },
+    // tokenCount() {
+    //   return this.tokens.length;
+    // },
+    // pageCount() {
+    //   return Math.ceil(this.tokenCount / this.eachPageSlide);
+    // },
+    // pagedTokens() {
+    //   const arr = [];
+    //   for (let i = 0; i < this.pageCount; i++) {
+    //     arr.push(this.tokens.slice(i * this.eachPageSlide, (i + 1) * this.eachPageSlide));
+    //   }
+    //   return arr;
+    // },
     searchEnabled() {
       return this.nftAddress.length > 0
     },
@@ -170,9 +176,7 @@ export default {
         }
         getSortArray(this.tokens).then(res=>{
           this.tokenUrisLength = res.data.data.length
-          // this.tokens = res.data.data["0"];
-          console.log(res.data.data);
-
+          this.tokens = res.data.data;
         })
 
         this.showSlides = true
