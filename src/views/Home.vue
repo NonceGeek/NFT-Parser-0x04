@@ -38,8 +38,10 @@
             type="flex"
             align="middle"
           >
-            <h1>部落{{ outerIndex + 1 }}</h1>
+            <h1 style="margin-left: 50px">部落{{ outerIndex + 1 }}</h1>
+            <img style="width: 200px;height: 200px;margin-left: 40px" :src="/.(png|jpg|jpeg|gif)$/g.test(outerTokenList[0][0].tokenUri) ? outerTokenList[0][0].tokenUri : 'https://ftp.bmp.ovh/imgs/2021/07/32980b295c7e152a.png'" alt="">
             <a-col :span="16" :offset="1">
+
               <a-carousel arrows>
                 <div
                   slot="prevArrow"
