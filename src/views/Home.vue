@@ -4,7 +4,7 @@
     <a-layout>
       <a-layout-header>
         <a-row class="project-name">NFT-Parser-0x04</a-row>
-        <a-row class="project-description">基本款</a-row>
+        <a-row class="project-description">基于NFT的电子宠物</a-row>
       </a-layout-header>
       <a-layout-content>
         <!-- 用户输入地址并显示 NFT -->
