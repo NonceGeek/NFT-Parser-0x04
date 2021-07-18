@@ -41,44 +41,50 @@
             <h1 style="margin-left: 50px">部落{{ outerIndex + 1 }}</h1>
             <img style="width: 200px;height: 200px;margin-left: 40px" :src="/.(png|jpg|jpeg|gif)$/g.test(outerTokenList[0][0].tokenUri) ? outerTokenList[0][0].tokenUri : 'https://ftp.bmp.ovh/imgs/2021/07/32980b295c7e152a.png'" alt="">
             <a-col :span="16" :offset="1">
-
-              <a-carousel arrows>
-                <div
-                  slot="prevArrow"
-                  class="custom-slick-arrow"
-                  style="left: 10px; zIndex: 1"
-                >
-                  <a-icon type="left-circle" />
-                </div>
-                <div
-                  slot="nextArrow"
-                  class="custom-slick-arrow"
-                  style="right: 10px"
-                >
-                  <a-icon type="right-circle" />
-                </div>
-                <div
-                  v-for="(middleTokenList, middleIndex) in outerTokenList"
-                  :key="`${outerIndex}/${middleIndex}`"
-                >
-                  <a-row>
-                    <a-col
-                      v-for="(token, innerIndex) in middleTokenList"
-                      :key="`${outerIndex}/${middleIndex}/${innerIndex}`"
-                      :span="24 / eachPageSlide"
-                      class="token-card"
+              <div style="border:1px dashed #000;">
+                <div style="margin-top: 20px">
+                  <a-carousel arrows>
+                    <div
+                      slot="prevArrow"
+                      class="custom-slick-arrow"
+                      style="left: 10px; zIndex: 1"
                     >
-                      <token-card
-                        :token="token"
-                      />
-                    </a-col>
-                  </a-row>
+                      <a-icon type="left-circle" />
+                    </div>
+                    <div
+                      slot="nextArrow"
+                      class="custom-slick-arrow"
+                      style="right: 10px"
+                    >
+                      <a-icon type="right-circle" />
+                    </div>
+                    <div
+                      v-for="(middleTokenList, middleIndex) in outerTokenList"
+                      :key="`${outerIndex}/${middleIndex}`"
+                    >
+                      <a-row>
+                        <a-col
+                          v-for="(token, innerIndex) in middleTokenList"
+                          :key="`${outerIndex}/${middleIndex}/${innerIndex}`"
+                          :span="24 / eachPageSlide"
+                          class="token-card"
+                        >
+                          <token-card
+                            :token="token"
+                          />
+
+
+                        </a-col>
+                      </a-row>
+                    </div>
+                  </a-carousel>
                 </div>
-              </a-carousel>
+
+              </div>
+
             </a-col>
           </a-row>
         </div>
-
       </a-layout-content>
       <a-layout-footer></a-layout-footer>
     </a-layout>
@@ -106,7 +112,6 @@ export default {
   },
   data() {
     return {
-      // nftAddress: '0xB84DF36e58a31f98d6294420569c365e8e1acaCd',
       nftAddress: '0xA8f3d9AB71C54111E120F5c0b658d18E0c7B8018',
       tokens: [],
       tokenList: [],
@@ -124,9 +129,6 @@ export default {
 
   },
   methods: {
-    get1(){
-
-    },
     checkNFTAddrInURL() {
       if (this.$route.query.addr) {
         this.nftAddress = this.$route.query.addr
